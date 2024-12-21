@@ -1,3 +1,12 @@
+FROM alpine:edge as frontend-builder
+LABEL stage=frontend-builder
+WORKDIR /app/frontend
+RUN apk add --no-cache git pnpm
+RUN git clone --recurse-submodules https://github.com/AlistGo/alist-web -- ./
+RUN pnpm i && pnpm up -PLr "artplayer*"
+RUN pnpm build
+
+
 FROM alpine:edge as builder
 LABEL stage=go-builder
 WORKDIR /app/
@@ -5,7 +14,9 @@ RUN apk add --no-cache bash curl gcc git go musl-dev
 COPY go.mod go.sum ./
 RUN go mod download
 COPY ./ ./
-RUN bash build.sh release docker
+COPY --from=frontend-builder /app/frontend/dist /app/public/dist
+RUN bash build.sh release-docker-no-fetchweb
+
 
 FROM alpine:edge
 

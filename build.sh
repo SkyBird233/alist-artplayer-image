@@ -302,6 +302,8 @@ if [ "$1" = "dev" ]; then
   else
     BuildDev
   fi
+elif [ "$1" = "release-docker-no-fetchweb" ]; then
+  BuildDocker
 elif [ "$1" = "release" -o "$1" = "beta" ]; then
   if [ "$1" = "beta" ]; then
     FetchWebDev
